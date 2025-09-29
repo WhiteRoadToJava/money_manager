@@ -12,6 +12,10 @@ import dev.mohammad.mymonymanager.repository.IncomeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class IncomeService {
@@ -30,6 +34,16 @@ public class IncomeService {
         newIncome = incomeRepository.save(newIncome);
         return toDTO(newIncome);
     }
+
+    public List<IncomeDTO> getCurrentIncomeForCurrentUser() {
+        ProfileEntity profile = profileService.getCurrentProfile();
+        LocalDate now = LocalDate.now();
+        LocalDate startDate = now.withDayOfMonth(1);
+        LocalDate endDate = now.plusDays(now.lengthOfMonth());
+        List<IncomeEntity> list = incomeRepository.findByProfileIdAndDateBetween(profile.getId(), startDate, endDate);
+        return list.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
 
     private IncomeEntity toEntity(IncomeDTO dto, ProfileEntity profile, CategoryEntity category) {
         return IncomeEntity.builder()

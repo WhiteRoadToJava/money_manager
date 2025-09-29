@@ -1,5 +1,6 @@
 package dev.mohammad.mymonymanager.dbo;
 
+import jakarta.persistence.PrePersist;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,6 +27,8 @@ public class IncomeDTO {
     private LocalDate date;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+
 
 
 }

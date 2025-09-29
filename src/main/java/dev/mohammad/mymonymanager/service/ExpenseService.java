@@ -11,6 +11,10 @@ import dev.mohammad.mymonymanager.repository.ExpenseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class ExpenseService {
@@ -27,6 +31,16 @@ public class ExpenseService {
         ExpenseEntity newExpense = toEntity(dto, profile, category);
         newExpense = expenseRepository.save(newExpense);
         return toDTO(newExpense);
+    }
+
+    //
+    public List<ExpenseDTO> getCurrentExpensesForCurrentUser() {
+        ProfileEntity profile = profileService.getCurrentProfile();
+        LocalDate now = LocalDate.now();
+        LocalDate startDate = now.withDayOfMonth(1);
+        LocalDate endDate = now.plusDays(now.lengthOfMonth());
+        List<ExpenseEntity> list = expenseRepository.findByProfileIdAndDateBetween(profile.getId(), startDate, endDate);
+        return list.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     private ExpenseEntity toEntity(ExpenseDTO expenseDTO, ProfileEntity profile, CategoryEntity category) {

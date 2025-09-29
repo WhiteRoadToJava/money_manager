@@ -44,7 +44,8 @@ public class ExpenseEntity {
     private ProfileEntity profile;
 
 
-    public void proPersist(){
+    @PrePersist
+    public void prePersist() {
         if(this.date == null){
             this.date = LocalDate.now();
         }

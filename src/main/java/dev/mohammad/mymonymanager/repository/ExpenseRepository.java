@@ -2,6 +2,7 @@ package dev.mohammad.mymonymanager.repository;
 
 import dev.mohammad.mymonymanager.entity.ExpenseEntity;
 
+import dev.mohammad.mymonymanager.entity.IncomeEntity;
 import lombok.Lombok;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
