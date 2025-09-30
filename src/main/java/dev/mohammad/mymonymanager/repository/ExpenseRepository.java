@@ -37,4 +37,7 @@ BigDecimal findTotalExpenseByProfileId(@Param("profileId") Long profileId);
             Sort sort
     );
 
-    List<ExpenseEntity> findByProfileIdAndDateBetween(Long profileId, LocalDate startDate, LocalDate endDate);}
+    List<ExpenseEntity> findByProfileIdAndDateBetween(Long profileId, LocalDate startDate, LocalDate endDate);
+
+List<ExpenseEntity> findByProfileIdAndDate(Long profileId, LocalDate date);
+}

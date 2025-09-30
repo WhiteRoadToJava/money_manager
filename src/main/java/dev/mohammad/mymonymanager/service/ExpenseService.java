@@ -29,12 +29,13 @@ public class ExpenseService {
 
     public ExpenseDTO addExpense(ExpenseDTO dto) {
         ProfileEntity profile = profileService.getCurrentProfile();
-        CategoryEntity category  =  categoryRepository.findById(dto.getCategoryId())
+        CategoryEntity category = categoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category Not Found"));
         ExpenseEntity newExpense = toEntity(dto, profile, category);
         newExpense = expenseRepository.save(newExpense);
         return toDTO(newExpense);
     }
+
     //
     public List<ExpenseDTO> getCurrentExpensesForCurrentUser() {
         ProfileEntity profile = profileService.getCurrentProfile();
@@ -68,6 +69,12 @@ public class ExpenseService {
         return list.stream().map(this::toDTO).toList();
     }
 
+    // Notifiations
+    public List<ExpenseDTO> getExpensesForUserOnDate(Long profileId, LocalDate date) {
+        List<ExpenseEntity> list = expenseRepository.findByProfileIdAndDate(profileId, date);
+        return list.stream().map(this::toDTO).toList();
+    }
+
     private ExpenseEntity toEntity(ExpenseDTO expenseDTO, ProfileEntity profile, CategoryEntity category) {
         return ExpenseEntity.builder()
                 .id(expenseDTO.getId())
@@ -80,13 +87,13 @@ public class ExpenseService {
                 .build();
     }
 
-    private ExpenseDTO toDTO(ExpenseEntity entity){
+    private ExpenseDTO toDTO(ExpenseEntity entity) {
         return ExpenseDTO.builder()
                 .id(entity.getId())
                 .name(entity.getName())
                 .icon(entity.getIcon())
                 .categoryId(entity.getCategory() != null ? entity.getCategory().getId() : null)
-                .categoryName(entity.getCategory() != null ? entity.getCategory().getName():"N/A")
+                .categoryName(entity.getCategory() != null ? entity.getCategory().getName() : "N/A")
                 .amount(entity.getAmount())
                 .date(entity.getDate())
                 .createdAt(entity.getCreationDate())

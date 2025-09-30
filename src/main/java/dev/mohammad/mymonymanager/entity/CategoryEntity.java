@@ -33,7 +33,7 @@ public class CategoryEntity {
 
         private String icon;
 
-        @ManyToOne(fetch = FetchType.LAZY)
+        @ManyToOne
         @JoinColumn(name = "profile_id", nullable = false)
         private ProfileEntity profile;
 
