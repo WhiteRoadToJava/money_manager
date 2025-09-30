@@ -2,7 +2,6 @@ package dev.mohammad.mymonymanager.service;
 
 
 import dev.mohammad.mymonymanager.dbo.ExpenseDTO;
-import dev.mohammad.mymonymanager.dbo.IncomeDTO;
 import dev.mohammad.mymonymanager.entity.CategoryEntity;
 import dev.mohammad.mymonymanager.entity.ExpenseEntity;
 import dev.mohammad.mymonymanager.entity.ProfileEntity;
@@ -11,6 +10,7 @@ import dev.mohammad.mymonymanager.repository.ExpenseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,14 +33,37 @@ public class ExpenseService {
         return toDTO(newExpense);
     }
 
-    //
-    public List<ExpenseDTO> getCurrentExpensesForCurrentUser() {
+    // Retrieves all expenses for current month/based
+    public List<ExpenseDTO> getCurrentMonthExpensesForCurrentUser() {
         ProfileEntity profile = profileService.getCurrentProfile();
         LocalDate now = LocalDate.now();
         LocalDate startDate = now.withDayOfMonth(1);
         LocalDate endDate = now.plusDays(now.lengthOfMonth());
         List<ExpenseEntity> list = expenseRepository.findByProfileIdAndDateBetween(profile.getId(), startDate, endDate);
         return list.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    public void deleteExpense(Long ExpenseId) {
+        ProfileEntity profile = profileService.getCurrentProfile();
+        ExpenseEntity entity =  expenseRepository.findById(ExpenseId)
+                .orElseThrow(() -> new RuntimeException("Expense Not Found"));
+        if (!entity.getProfile().getId().equals(profile.getId())) {
+            throw new RuntimeException("Unauthorized to delete this Expense");
+        }
+        expenseRepository.delete(entity);
+    }
+
+    // get latest 5 expenses for current user
+    public List<ExpenseDTO> getLatest5ExpenseForCurrentUser() {
+        ProfileEntity profile = profileService.getCurrentProfile();
+        List<ExpenseEntity> list = expenseRepository.findTop5ByProfileIdOrderByDateDesc(profile.getId());
+        return list.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    public BigDecimal getTotalExpenseForCurrentUser() {
+        ProfileEntity profile = profileService.getCurrentProfile();
+        BigDecimal total = expenseRepository.findTotalExpenseByProfileId(profile.getId());
+        return total != null ? total : BigDecimal.ZERO;
     }
 
     private ExpenseEntity toEntity(ExpenseDTO expenseDTO, ProfileEntity profile, CategoryEntity category) {
