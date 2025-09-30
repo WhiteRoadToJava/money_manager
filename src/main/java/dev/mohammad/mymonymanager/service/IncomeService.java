@@ -10,6 +10,7 @@ import dev.mohammad.mymonymanager.entity.ProfileEntity;
 import dev.mohammad.mymonymanager.repository.CategoryRepository;
 import dev.mohammad.mymonymanager.repository.IncomeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -53,6 +54,13 @@ public class IncomeService {
             throw new RuntimeException("Unauthorized to delete this Expense");
         }
         incomeRepository.delete(entity);
+    }
+
+    //filter incomes
+    public List<IncomeDTO> filterIncomes(LocalDate startDate, LocalDate endDate, String keyword, Sort sort) {
+        ProfileEntity profile = profileService.getCurrentProfile();
+        List<IncomeEntity> list = incomeRepository.findByProfileIdAndDateBetweenAndNameContainingIgnoreCase(profile.getId(), startDate, endDate, keyword, sort);
+        return list.stream().map(this::toDTO).toList();
     }
 
     public List<IncomeDTO> getLatest5IncomeForCurrentUser() {

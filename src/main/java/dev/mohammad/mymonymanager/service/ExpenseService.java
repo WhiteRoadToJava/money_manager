@@ -10,6 +10,7 @@ import dev.mohammad.mymonymanager.entity.ProfileEntity;
 import dev.mohammad.mymonymanager.repository.CategoryRepository;
 import dev.mohammad.mymonymanager.repository.ExpenseRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -58,6 +59,13 @@ public class ExpenseService {
             throw new RuntimeException("Unauthorized to delete this Expense");
         }
         expenseRepository.delete(entity);
+    }
+
+    //filter expenses
+    public List<ExpenseDTO> filterExpenses(LocalDate startDate, LocalDate endDate, String keyword, Sort sort) {
+        ProfileEntity profile = profileService.getCurrentProfile();
+        List<ExpenseEntity> list = expenseRepository.findByProfileIdAndDateBetweenAndNameContainingIgnoreCase(profile.getId(), startDate, endDate, keyword, sort);
+        return list.stream().map(this::toDTO).toList();
     }
 
     private ExpenseEntity toEntity(ExpenseDTO expenseDTO, ProfileEntity profile, CategoryEntity category) {
