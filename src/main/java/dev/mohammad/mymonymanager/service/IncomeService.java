@@ -65,7 +65,6 @@ public class IncomeService {
         ProfileEntity profile = profileService.getCurrentProfile();
         BigDecimal total = incomeRepository.findTotalExpenseByProfileId(profile.getId());
         return total != null ? total : BigDecimal.ZERO;
-
     }
 
 
