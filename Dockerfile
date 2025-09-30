@@ -1,8 +1,8 @@
 # ----------------------------------------
 # Stage 1: BUILDER
-# Uses the full JDK to compile the code and create the JAR file.
+# 💡 FIX: Use a Maven image which includes the JDK and mvn tool.
 # ----------------------------------------
-FROM eclipse-temurin:21-jdk as builder
+FROM maven:3.9.5-eclipse-temurin-21 as builder
 WORKDIR /app
 
 # Copy the build file (pom.xml for Maven)
@@ -18,8 +18,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # ----------------------------------------
-# Stage 2: RUNTIME
-# Uses the smaller JRE image for the final, lightweight container.
+# Stage 2: RUNTIME (NO CHANGE NEEDED HERE)
 # ----------------------------------------
 FROM eclipse-temurin:21-jre
 WORKDIR /app
@@ -31,4 +30,4 @@ COPY --from=builder /app/target/myMonyManager-0.0.1-SNAPSHOT.jar moneymanager-v1
 EXPOSE 9090
 
 # Command to run the application
-ENTRYPOINT ["java","-jar","moneymanager-v1.0.jar"]["java", "-jar", "moneymanager-v1.0.jar"]
+ENTRYPOINT ["java","-jar","moneymanager-v1.0.jar"]
